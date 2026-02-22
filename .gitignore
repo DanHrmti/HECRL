@@ -1,0 +1,11 @@
+__pycache__
+
+# logging
+output
+outputs
+
+# data and checkpoints
+datasets/data/*
+visual_encoders/chkpts/*
+*.npz
+*.pth

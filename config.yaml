@@ -1,0 +1,181 @@
+defaults:
+    - override hydra/launcher: submitit_local
+
+# code optimization
+compile: true
+cudagraphs: true
+
+# logging
+wandb_project: HECRL
+wandb_entity: ???
+wandb_silent: false
+wandb_name_suffix: ""
+enable_wandb: true
+save_video: true
+save_agent: true
+seed: random
+
+# environment
+ogbench: false  # set true if using original OGBench environments
+task: manipobj-v0
+train_dataset_name: ppp-cube-noisy-v0-mv
+train_dataset_div: 1  # factor to divide the dataset size for training
+obs: dlp  # [state, rgb, vqvae, ec_state, ec_state_gen, dlp]
+multiview: false
+reward: env  # [unsupervised, env] - refers to reward returned from the buffer, unsupervised corresponds to the ogbench reward
+done_signal: false
+gamma: 0.99  # default 0.99
+max_episode_steps: 1000
+rep_model_checkpoint: visual_encoders/chkpts/<checkpoint_name>
+rep_model_device: cuda:0
+dlp_post_training_num_kp: -1  # optional, set number of encoded keypoints post-training, -1 keeps the original number of keypoints
+
+env_kwargs:
+  manipobj:
+    mode: task
+    reward_mode: sparse  # [sparse, step, dense] - refers to reward returned from the environment
+    num_cubes: 0
+    num_colors: 6
+    random_colors: true
+    reward_scale: 1
+    visualize_info: false
+    terminate_at_goal: false
+    width: 128
+    height: 128
+  
+  scene:
+    mode: task
+    reward_mode: sparse  # [sparse, step] - refers to reward returned from the environment
+    num_cubes: 1
+    visualize_info: false
+    terminate_at_goal: false
+    width: 128
+    height: 128
+    
+  pushtetris:
+    mode: task
+    reward_mode: sparse
+    object_list: ["O", "I", "S", "Z", "L", "J", "T"]
+    num_objects: 3
+    visualize_target: false
+    render_size: 128
+
+# evaluation
+eval_checkpoint: output/train/path/to/file.pt
+eval_variant_name: ""
+eval_freq: 100_000  # during training
+num_eval_episodes: 100
+num_video_episodes: 5
+video_frame_skip: 3
+eval_task_ids: [1, 2, 3, 4, 5]  # for ogbench tasks
+subgoal_factor_eval: false  # if true, evaluates subgoal "factoredness" for state-based cube environments
+
+# training
+steps: 10_000_000
+batch_size: 512
+lr: 0.0003
+grad_clip_norm: 20
+# goal sampling
+# ogbench defaults: (0.2, 0.5, 0.3, true), (0.0, 1.0, 0.0, false)
+p_curgoal_value: 0.2
+p_trajgoal_value: 0.8
+p_randgoal_value: 0.0
+geom_sample_value: false
+p_curgoal_policy: 0.0
+p_trajgoal_policy: 1.0
+p_randgoal_policy: 0.0
+geom_sample_policy: false
+
+# agent
+agent: sgiql  # [iql, hiql, sgiql]
+train_from_checkpoint: false
+checkpoint: output/train/path/to/file.pt
+
+# architecture
+arch_mlp:  # standard
+  h_dim: 512
+  conv_channels: [16, 32, 32]  # for 'rgb' obs_mode
+
+arch_eit:  # factored
+  embed_dim: 64
+  h_dim: 256
+  n_head: 8
+  dropout: 0.0
+  n_diffuser_layers: 8
+
+# rl agents
+iql:
+  tau: 0.005
+  alpha: 0.1  # tune per env+rep
+  expectile: 0.9
+
+hiql:
+  tau: 0.005
+  alpha: 0.1  # tune per env+rep
+  beta: 3.0  # tune per env+rep
+  expectile: 0.9
+  subgoal_k: 50  # training
+  subgoal_steps: 25  # test-time
+  num_subgoals: 32  # test-time
+  disable_subgoal: false  # test-time
+  chamfer_metric: l1  # for EC-AWR training
+  chamfer_target_weight: 1  # for EC-AWR training
+
+sgiql:
+  tau: 0.005
+  alpha: 0.1  # tune per env+rep
+  beta: 3.0  # tune per env+rep
+  expectile: 0.9
+  subgoal_k: 50  # training
+  subgoal_policy_type: diffusion  # [standard, diffusion]
+  n_diffusion_steps: 10  # training
+  subgoal_steps: 25  # test-time
+  num_subgoals: 32  # test-time
+  n_diffusion_samples: 256  # test-time
+  value_competence_radius: -30  # test-time
+  disable_subgoal: false  # test-time
+  filter_subgoals: true  # test-time
+
+  load_pretrained_goal_pi: false
+  goal_pi_chkpt: output/train/path/to/file.pt
+
+  debug_subgoals: false  # if true, prints value of current obs to goal and subgoal to goal
+
+  chamfer_metric: l1  # for EC-AWR training
+  chamfer_target_weight: 1  # for EC-AWR training
+
+# data collection
+data_dir: datasets/data
+dataset_name: task-name-v0
+dataset_type: noisy # ['play', 'noisy']
+num_collect_episodes: 2500
+min_action_norm: 0.4  # minimum action norm for MarkovOracle
+p_random_action: 0.1  # probability of selecting a random action
+action_noise: 0.1  # action noise level
+action_noise_smoothing: 0.5  # action noise smoothing level for PlanOracle
+
+# convenience
+work_dir: ???
+log_dir: ???
+eval_log_dir: ???
+task_title: ???
+exp_name: ???
+obs_shape: ???
+action_dim: ???
+action_high: ???
+action_low: ???
+data_episode_length: ???
+env_episode_length: ???
+warmup_steps: ???
+
+# common agent params
+alpha: ???
+beta: ???
+subgoal_k: ???
+subgoal_steps: ???
+chamfer_metric: ???
+chamfer_target_weight: ???
+
+# env specific
+num_objects: ???
+num_cubes: ???

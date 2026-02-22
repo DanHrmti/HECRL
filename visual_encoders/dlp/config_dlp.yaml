@@ -1,0 +1,35 @@
+# DLP Training Configuration
+
+ds: "hecrl_env"
+data_root_dir: '/path/to/dataset'
+tasks: None
+
+lr: 0.0002
+batch_size: 32
+num_epochs: 250
+load_model: False
+eval_epoch_freq: 1
+n_kp: 1  # num kp per patch
+kp_range: [-1, 1]
+weight_decay: 0.0
+run_prefix: ""
+pad_mode: 'replicate'
+sigma: 1.0  # default sigma for the gaussian maps
+dropout: 0.0
+kp_activation: "tanh"
+warmup_epoch: 1
+eval_im_metrics: False
+
+beta_kl: 0.1
+beta_rec: 1.0
+scale_std: 0.3
+offset_std: 0.2
+n_kp_enc: 20  # total kp to output from the encoder / filter from prior
+n_kp_prior: 32
+patch_size: 16
+learned_feature_dim: 8  # latent visual features for each kp (excluding bg)
+bg_learned_feature_dim: 1
+topk: 10  # display top-10 kp with the smallest variance
+recon_loss_type: "mse"
+anchor_s: 0.25
+kl_balance: 0.001
