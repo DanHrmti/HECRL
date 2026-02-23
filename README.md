@@ -92,9 +92,9 @@ See paper for full details including the modifications from the original environ
 ## 3. Datasets and Data Collection
 
 <p align="center">
-  <img src="assets/collect_cube.gif" height="130"> &nbsp; &nbsp;
-  <img src="assets/collect_cube_stack.gif" height="130"> &nbsp; &nbsp;
-  <img src="assets/collect_scene.gif" height="130"> &nbsp; &nbsp;
+  <img src="assets/collect_cube.gif" height="130"> &nbsp;
+  <img src="assets/collect_cube_stack.gif" height="130"> &nbsp;
+  <img src="assets/collect_scene.gif" height="130"> &nbsp;
   <img src="assets/collect_tetris.gif" height="130">
 </p>
 
